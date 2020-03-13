@@ -25,11 +25,12 @@ public class MyChatServer {
                     .childHandler(new MyChatServerInitializeor());
 
             ChannelFuture channelFuture = serverBootstrap.bind(8899).sync();
+            // 必须使用closeFuture，否则使用close就关闭
             channelFuture.channel().closeFuture().sync();
 
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }

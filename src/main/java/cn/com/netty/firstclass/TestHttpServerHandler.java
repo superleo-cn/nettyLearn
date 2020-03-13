@@ -17,6 +17,7 @@ public class TestHttpServerHandler extends SimpleChannelInboundHandler<HttpObjec
 
     /**
      * 读取客户端发发过来的消息，并发出响应
+     *
      * @param channelHandlerContext
      * @param httpObject
      * @throws Exception
@@ -29,7 +30,7 @@ public class TestHttpServerHandler extends SimpleChannelInboundHandler<HttpObjec
             HttpRequest request = (HttpRequest) httpObject;
             System.out.println("channelHandler 执行 channelRead0");
             System.out.println("请求方法名：" + request.method().name() + ", uri:" + request.uri());
-            //过滤相关无用的请求
+            //过滤相关无用的请求 对于像某些类似浏览器的程序，除了正常的请求，还会额外的发送这个favicon.ico图标，这里我们可以过滤掉
             if (request.uri().contains("favicon.ico")) {
                 return;
             }
@@ -43,14 +44,18 @@ public class TestHttpServerHandler extends SimpleChannelInboundHandler<HttpObjec
 
             // 返回客户端
             channelHandlerContext.writeAndFlush(response);
+
+            // 也可以服务器端主动关闭连接，这样就能触发inactive和unregister等方法并不会马上回调
+            // channelHandlerContext.channel().close();
         }
 
 
     }
 
     /**
-     * 浏览器跟终端curl请求可能不一样，浏览器会有缓存
+     * 浏览器跟终端curl请求可能不一样，根据Http协议的版本浏览器并不一定会立即关闭客户端的请求
      * 关掉浏览器后 unregistered被调用
+     *
      * @param ctx
      * @throws Exception
      */
@@ -73,6 +78,7 @@ public class TestHttpServerHandler extends SimpleChannelInboundHandler<HttpObjec
         super.handlerAdded(ctx);
     }
 
+    // 所以类似inactive和unregister等方法并不会马上回调
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("channel inactive");

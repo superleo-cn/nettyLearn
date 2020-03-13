@@ -18,6 +18,7 @@ public class MyClientHandler extends SimpleChannelInboundHandler<String> {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSS");
         System.out.println("连接服务端： " + channelHandlerContext.channel().remoteAddress());
         System.out.println("get msg from server: " + s);
+        Thread.sleep(1000);
         channelHandlerContext.writeAndFlush("client send msg: " + dateTimeFormatter.format(LocalDateTime.now()));
 
     }
@@ -26,6 +27,7 @@ public class MyClientHandler extends SimpleChannelInboundHandler<String> {
 
     /**
      * 与服务端建立连接后，回调
+     *
      * @param ctx
      * @throws Exception
      */

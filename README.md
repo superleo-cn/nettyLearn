@@ -372,12 +372,21 @@ public class WebSocketChannelInitializer extends ChannelInitializer<SocketChanne
     }
     ```
 ## RPC框架
+
+### RMI(Remote Method Invocation)-只针对Java
+- Client: Stub
+- Server: Skeleton
+> 序列化与反序列化也称作编码与解码
+
+### RPC(Remote Procedure Call)-可跨语言
 1. 定义一个接口的说明文件
 2. 通过编译器将这个文件编译成你想调用的那种语言文件
 3. 引入编译好的文件发起远程调用 
+
+## Protocol Buffer - 序列化/反序列化
 ### [protobuf说明文件](./protobuf.md)
 
-## thrift
+## thrift - 协议+序列化/反序列化+传输
 * 包名: `thrift`<br/>
 * thrift的声明文件<br/>
     src/thrift<br/>
@@ -385,12 +394,13 @@ public class WebSocketChannelInitializer extends ChannelInitializer<SocketChanne
     ```shell script
       thrift --gen java src/thrift/data.thrift
     ```
+## gRPC - ProtoBuf + 传输
+
+
 
 ## ***nio 相关知识***
 
 [***nio相关***](./nio.md)
-
-
 
 ## 目录说明
 
@@ -399,3 +409,27 @@ public class WebSocketChannelInitializer extends ChannelInitializer<SocketChanne
 
 ## 学习地址
 [B站视频地址信息](https://www.bilibili.com/video/av33707223?p=4)
+
+
+## 多项目依赖同一个项目基于git的解决方案
+
+1. git submodule: git仓库中的一个仓库： 对分支开发不是很友好。比如外层分支切换了，里层分支没有切换，那么提交的时候，可能就会出现混乱。
+或者在外层仓库直接修改里层仓库代码，然后提交到仓库，后面其他人再获取代码时，就会出问题。
+
+```java
+
+Protobuf-java: 专门用于存放protobuf相关的代码, 作为git的submodule分别加入到下面两个项目中，由于是submodule项目。因此下面的项目
+pull的时候并不会导致该项目也拉取，需要手工进入pull。
+
+ServerProject: 一个独立的server端代码项目，依赖Protobuf-java项目
+ClientProject: 一个独立的client端代码项目，依赖Protobuf-java项目
+
+
+```
+
+
+2. git subtree: 和上面方案类似，也是有三个git项目，但是最大的不同在于。使用了git subtree后，当对项目ServerProject或ClientProject进行pull的时候，
+获取到的Protobuf-java代码实际上是分别和ServerProject和ClientProject中的代码进行合并，并不是和之前那样是两个独立的git托管项目了。
+
+
+3. 独立出Protobuf-java项目，然后每次修改完后打包成jar上传到自己的私服，让其他项目依赖。

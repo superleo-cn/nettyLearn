@@ -1,6 +1,5 @@
 package cn.com.netty.official.snoop;
 
-import com.sun.jndi.toolkit.url.Uri;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;

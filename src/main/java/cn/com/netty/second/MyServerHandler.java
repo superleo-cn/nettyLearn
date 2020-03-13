@@ -30,6 +30,11 @@ public class MyServerHandler extends SimpleChannelInboundHandler<String> {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
         ctx.close();
-
     }
+
+//    @Override
+//    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+//        super.channelRegistered(ctx);
+//        ctx.channel().writeAndFlush("client connected successfully.");
+//    }
 }
