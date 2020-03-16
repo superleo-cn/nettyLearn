@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -70,10 +72,20 @@ public class MyNIOClient {
                     ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
                     try {
                         int total = sc.read(byteBuffer);
-//                        byteBuffer.flip();
+                        // 对于全量一次性取出所有字节数组的话，是不用调用flip的。
+                        //  byteBuffer.flip();
                         if (total > 0) {
-                            String str = new String(byteBuffer.array(), 0, total);
-                            System.out.println("【客户端】接收到服务端返回的数据 ： " + str);
+                            // 方式一：直接从headbuff所依赖的底层byte数组把数据返回和要不要flip没有任何关系
+//                            String str = new String(byteBuffer.array(), 0, total);
+//                            System.out.println("【客户端】接收到服务端返回的数据 ： " + str);
+
+                            // 方式二：使用 flip + Charset + CharBuffer 来循环输出
+                            byteBuffer.flip();
+                            Charset charset = Charset.forName("UTF-8");
+                            CharBuffer charBuffer = charset.newDecoder().decode(byteBuffer);
+                            while (charBuffer.hasRemaining()) {
+                                System.out.print(charBuffer.get());
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
